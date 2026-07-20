@@ -26,7 +26,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          cache: 'gradle'
 
       - uses: subosito/flutter-action@v2
         with:
@@ -37,9 +36,19 @@ jobs:
         run: flutter pub get
 
       - name: Create android folder
-        run: flutter create --platforms android .
+        run: flutter create --platforms android --org com.alaa --project-name keymanager .
 
-      - name: Build
+      - name: Add permissions to AndroidManifest
+        run: |
+          MANIFEST="android/app/src/main/AndroidManifest.xml"
+          sed -i 's/<application/<uses-permission android:name="android.permission.INTERNET"\/>\n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"\/>\n    <application/' $MANIFEST
+
+      - name: Set app label
+        run: |
+          MANIFEST="android/app/src/main/AndroidManifest.xml"
+          sed -i 's/android:label="[^"]*"/android:label="KeyManager"/' $MANIFEST
+
+      - name: Build APK
         run: |
           TYPE="${{ github.event.inputs.build_type }}"
           OUT="${{ github.event.inputs.output_type }}"
