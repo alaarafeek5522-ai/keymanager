@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class LicenseKey {
   final String key;
   final bool active;
