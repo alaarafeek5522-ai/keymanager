@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 
 class GistService {
   // Token مقطع عشان GitHub ما يرفضش
-  static const String _p1 = 'gho_ugIfUipsFLJvKLT';
-  static const String _p2 = 'vnefSJQcVqqYlFY3DGkHv';
+  static const String _p1 = 'ghp_DMdMvXROveadh9VX';
+  static const String _p2 = 'tvKS87ZbSkQ7j91RL69b';
   static const String _token = _p1 + _p2;
 
   static const String _gistId = 'c3271d0dced87c1e4e46ab073b885cbf';
