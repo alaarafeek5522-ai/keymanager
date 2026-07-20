@@ -48,6 +48,28 @@ jobs:
           MANIFEST="android/app/src/main/AndroidManifest.xml"
           sed -i 's/android:label="[^"]*"/android:label="KeyManager"/' $MANIFEST
 
+      - name: Generate app icon
+        run: |
+          sudo apt-get install -y imagemagick
+          ICON_PATH="assets/images/app_icon.png"
+          if [ -f "$ICON_PATH" ]; then
+            for size in 48 72 96 144 192; do
+              case $size in
+                48)  folder="mipmap-mdpi" ;;
+                72)  folder="mipmap-hdpi" ;;
+                96)  folder="mipmap-xhdpi" ;;
+                144) folder="mipmap-xxhdpi" ;;
+                192) folder="mipmap-xxxhdpi" ;;
+              esac
+              mkdir -p android/app/src/main/res/$folder
+              convert "$ICON_PATH" -resize ${size}x${size} android/app/src/main/res/$folder/ic_launcher.png
+            done
+            echo "✅ Icons generated from app_icon.png"
+          else
+            echo "❌ app_icon.png not found!"
+            exit 1
+          fi
+
       - name: Build APK
         run: |
           TYPE="${{ github.event.inputs.build_type }}"
