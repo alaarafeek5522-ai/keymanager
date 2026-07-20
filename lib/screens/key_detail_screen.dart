@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import '../models/key_model.dart';
@@ -19,6 +19,11 @@ class KeyDetailScreen extends StatelessWidget {
         title: Text(licenseKey.key),
         actions: [
           IconButton(
+            icon: const Icon(Icons.copy, color: Colors.white),
+            tooltip: 'Copy Key',
+            onPressed: () => _copyKey(context),
+          ),
+          IconButton(
             icon: Icon(
               licenseKey.active ? Icons.block : Icons.check_circle,
               color: licenseKey.active ? AppTheme.accent : AppTheme.secondary,
@@ -31,9 +36,59 @@ class KeyDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
+            _buildKeyCard(context),
+            const SizedBox(height: 20),
             _buildInfoCard(),
             const SizedBox(height: 20),
             _buildActions(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildKeyCard(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    licenseKey.key,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.copy, color: AppTheme.primary),
+                  tooltip: 'Copy Key',
+                  onPressed: () => _copyKey(context),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: licenseKey.statusColor.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                licenseKey.statusText,
+                style: TextStyle(
+                  color: licenseKey.statusColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -46,8 +101,6 @@ class KeyDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            _infoRow('Status', licenseKey.statusText, licenseKey.statusColor),
-            const Divider(color: Colors.white24),
             _infoRow('Duration', '${licenseKey.duration} ${licenseKey.unit}'),
             const Divider(color: Colors.white24),
             _infoRow('Device ID', licenseKey.deviceId ?? 'Not registered'),
@@ -86,6 +139,13 @@ class KeyDetailScreen extends StatelessWidget {
   Widget _buildActions(BuildContext context) {
     return Column(
       children: [
+        _actionButton(
+          'Copy Key',
+          Icons.copy,
+          AppTheme.primary,
+          () => _copyKey(context),
+        ),
+        const SizedBox(height: 12),
         _actionButton(
           'Reset Device',
           Icons.phonelink_erase,
@@ -126,6 +186,17 @@ class KeyDetailScreen extends StatelessWidget {
         icon: Icon(icon),
         label: Text(text, style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
+    );
+  }
+
+  void _copyKey(BuildContext context) {
+    Clipboard.setData(ClipboardData(text: licenseKey.key));
+    Fluttertoast.showToast(
+      msg: 'Key copied: ${licenseKey.key}',
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: AppTheme.secondary,
+      textColor: Colors.white,
     );
   }
 

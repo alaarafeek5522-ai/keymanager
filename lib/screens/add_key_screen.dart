@@ -28,9 +28,12 @@ class _AddKeyScreenState extends State<AddKeyScreen> {
             TextField(
               controller: _keyController,
               style: const TextStyle(color: Colors.white),
+              keyboardType: TextInputType.text, // مش number
               decoration: InputDecoration(
                 labelText: 'License Key',
                 labelStyle: const TextStyle(color: Colors.white70),
+                hintText: 'ABC-1234-5678',
+                hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
                 filled: true,
                 fillColor: AppTheme.cardDark,
                 border: OutlineInputBorder(
@@ -82,13 +85,20 @@ class _AddKeyScreenState extends State<AddKeyScreen> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primary,
+                  foregroundColor: Colors.white, // ده بيخلي النص أبيض
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 onPressed: _addKey,
-                child: const Text('Add Key',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'ADD KEY',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ],
@@ -102,19 +112,29 @@ class _AddKeyScreenState extends State<AddKeyScreen> {
     final duration = int.tryParse(_durationController.text) ?? 1;
 
     if (key.isEmpty) {
-      Fluttertoast.showToast(msg: 'Please enter a key');
+      _showMessage('Please enter a key');
       return;
     }
 
     try {
       await context.read<KeyProvider>().addKey(key, duration, _unit);
       if (mounted) {
-        Fluttertoast.showToast(msg: 'Key added successfully');
+        _showMessage('Key added successfully');
         Navigator.pop(context);
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: e.toString());
+      _showMessage(e.toString());
     }
+  }
+
+  void _showMessage(String msg) {
+    Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.CENTER,
+      backgroundColor: AppTheme.cardDark,
+      textColor: Colors.white,
+    );
   }
 
   @override
